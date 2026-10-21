@@ -1,0 +1,21 @@
+---
+import Section from "./Section.astro";
+
+const groups = [
+  { name: "Backend and APIs", items: ["PHP", "Laravel", "REST APIs", "Python"] },
+  { name: "Frontend", items: ["JavaScript", "TypeScript", "React", "Vue 3", "Tailwind CSS", "HTML", "CSS"] },
+  { name: "Data", items: ["SQL", "MySQL", "PostgreSQL", "NoSQL"] },
+  { name: "Real-time and messaging", items: ["MQTT", "Kafka"] },
+  { name: "Tooling", items: ["Git", "GitHub", "Docker", "Linux"] },
+];
+---
+<Section id="skills" title="Skills">
+  <dl class="grid gap-8 sm:grid-cols-2">
+    {groups.map((g) => (
+      <div>
+        <dt class="font-semibold">{g.name}</dt>
+        <dd class="mt-2 text-muted">{g.items.join(" · ")}</dd>
+      </div>
+    ))}
+  </dl>
+</Section>

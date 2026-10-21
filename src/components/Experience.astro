@@ -1,0 +1,25 @@
+---
+import Section from "./Section.astro";
+import { experience } from "../data/experience";
+---
+<Section id="experience" title="Experience">
+  <ol class="space-y-12">
+    {experience.map((job) => (
+      <li class="grid gap-2 md:grid-cols-[14rem_1fr] md:gap-8">
+        <div>
+          <p class="font-mono text-sm text-muted">{job.period}</p>
+          <p class="text-sm text-muted">{job.place}</p>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold">
+            {job.role} <span class="text-muted">· {job.company}</span>
+          </h3>
+          {job.summary && <p class="mt-2 text-muted">{job.summary}</p>}
+          <ul class="mt-4 list-disc space-y-2 pl-5 marker:text-accent">
+            {job.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+        </div>
+      </li>
+    ))}
+  </ol>
+</Section>
