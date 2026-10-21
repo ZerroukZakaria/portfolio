@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+
+/* Dark is the default theme */
+:root {
+  color-scheme: dark;
+  --bg: #0f1115;
+  --surface: #171a21;
+  --text: #e8e6e1;
+  --muted: #9aa0a9;
+  --border: #2a2f39;
+  --accent: #f2b134;
+  --accent-ink: #0f1115; /* text color on top of accent buttons */
+}
+
+/* Follow the system if it prefers light, unless the user forced dark */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --text: #16181d;
+    --muted: #555b66;
+    --border: #dcd7cc;
+    --accent: #9a5b00; /* darker amber so it stays readable on light */
+    --accent-ink: #ffffff;
+  }
+}
+
+/* The toggle will set this attribute to force light */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --text: #16181d;
+  --muted: #555b66;
+  --border: #dcd7cc;
+  --accent: #9a5b00;
+  --accent-ink: #ffffff;
+}
+
+/* Expose the variables to Tailwind as utilities: bg-bg, text-muted, etc. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+/* Visible keyboard focus, required for accessibility */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Respect visitors who turn animations off */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
