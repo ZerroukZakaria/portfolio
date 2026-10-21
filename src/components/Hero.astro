@@ -1,0 +1,32 @@
+---
+import { site } from "../data/site";
+---
+<section class="mx-auto max-w-5xl px-6 pb-24 pt-20 md:pt-28">
+  <p class="font-mono text-sm text-accent">Mohammedia, Morocco</p>
+
+  <h1 class="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
+    Full-stack developer building real-time, data-driven web applications.
+  </h1>
+
+  <p class="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+    For two years at Plutus I built fleet-management and vehicle-tracking
+    platforms: geolocation and geofencing logic, MQTT and Kafka data flows,
+    APIs and reports. Open to full-stack and backend roles, on-site, hybrid or
+    remote.
+  </p>
+
+  <div class="mt-8 flex flex-wrap gap-3">
+    <a href="#projects" class="rounded bg-accent px-5 py-2.5 font-semibold text-accent-ink hover:opacity-90">
+      View projects
+    </a>
+    <a href="#contact" class="rounded border border-border px-5 py-2.5 font-semibold hover:border-accent">
+      Contact me
+    </a>
+  </div>
+
+  <ul class="mt-8 flex flex-wrap gap-6 font-mono text-sm text-muted">
+    <li><a class="hover:text-text" href={site.github} rel="noopener">GitHub</a></li>
+    <li><a class="hover:text-text" href={site.linkedin} rel="noopener">LinkedIn</a></li>
+    <li><a class="hover:text-text" href={`mailto:${site.email}`}>Email</a></li>
+  </ul>
+</section>

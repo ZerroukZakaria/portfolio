@@ -1,0 +1,94 @@
+---
+import { site } from "../data/site";
+
+const links = [
+  { href: "#projects", label: "Projects" },
+  { href: "#experience", label: "Experience" },
+  { href: "#skills", label: "Skills" },
+  { href: "#contact", label: "Contact" },
+];
+---
+<header class="sticky top-0 z-50 border-b border-border bg-bg/90 backdrop-blur">
+  <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+    <a href="/" class="font-semibold tracking-tight">{site.name}</a>
+
+    <div class="flex items-center gap-2">
+      <nav
+        id="nav-links"
+        aria-label="Main"
+        class="absolute inset-x-0 top-full hidden flex-col gap-1 border-b border-border bg-bg p-4 data-[open=true]:flex md:static md:flex md:flex-row md:items-center md:gap-6 md:border-0 md:bg-transparent md:p-0"
+      >
+        {links.map((l) => (
+          <a href={l.href} class="py-2 text-muted transition-colors hover:text-text md:py-0">
+            {l.label}
+          </a>
+        ))}
+        <a
+          href={site.cv}
+          class="mt-2 rounded border border-border px-3 py-1.5 text-center text-sm hover:border-accent md:mt-0"
+        >
+          CV ↓
+        </a>
+      </nav>
+
+      <button
+        id="theme-toggle"
+        type="button"
+        aria-label="Toggle light and dark theme"
+        class="rounded p-2 text-muted hover:text-text"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" />
+        </svg>
+      </button>
+
+      <button
+        id="menu-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="nav-links"
+        class="rounded p-2 text-muted hover:text-text md:hidden"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const root = document.documentElement;
+
+  // Theme toggle: flips between light and dark and remembers the choice
+  document.getElementById("theme-toggle")?.addEventListener("click", () => {
+    const current =
+      root.dataset.theme ??
+      (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    const next = current === "light" ? "dark" : "light";
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem("theme", next);
+    } catch {}
+  });
+
+  // Mobile menu
+  const nav = document.getElementById("nav-links");
+  const menuBtn = document.getElementById("menu-toggle");
+  const setOpen = (open: boolean) => {
+    nav?.setAttribute("data-open", String(open));
+    menuBtn?.setAttribute("aria-expanded", String(open));
+    menuBtn?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  };
+  menuBtn?.addEventListener("click", () =>
+    setOpen(nav?.getAttribute("data-open") !== "true")
+  );
+  nav?.querySelectorAll("a").forEach((a) =>
+    a.addEventListener("click", () => setOpen(false))
+  );
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+</script>
