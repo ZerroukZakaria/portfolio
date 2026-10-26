@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
-import Header from "../components/Header.astro";
+import MobileBar from "../components/MobileBar.astro";
+import ProfilePanel from "../components/ProfilePanel.astro";
 
 interface Props {
   title: string;
@@ -31,9 +32,13 @@ const { title, description } = Astro.props;
     >
       Skip to content
     </a>
-    <Header />
-    <main id="main">
-      <slot />
-    </main>
+astro
+    <MobileBar />
+    <div class="mx-auto max-w-[1100px] px-6 pt-8 min-[900px]:grid min-[900px]:grid-cols-[280px_minmax(0,1fr)] min-[900px]:gap-16 min-[900px]:py-12">
+      <ProfilePanel />
+      <main id="main" class="min-w-0">
+        <slot />
+      </main>
+    </div>
   </body>
 </html>

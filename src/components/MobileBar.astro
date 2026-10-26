@@ -1,0 +1,47 @@
+---
+import { site } from "../data/site";
+import { navLinks } from "../data/nav";
+import ThemeToggle from "./ThemeToggle.astro";
+---
+<header class="sticky top-0 z-50 border-b border-border bg-bg/90 backdrop-blur min-[900px]:hidden">
+  <div class="mx-auto flex h-14 max-w-[1100px] items-center justify-between px-6">
+    <a href="/" class="font-semibold tracking-tight">{site.name}</a>
+    <div class="flex items-center gap-1">
+      <ThemeToggle />
+      <button
+        id="menu-toggle"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        class="rounded p-2 text-muted hover:text-text"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <nav id="mobile-nav" aria-label="Sections" class="hidden border-t border-border bg-bg px-6 py-3 data-[open=true]:block">
+    <ul class="grid gap-1">
+      {navLinks.map((l) => (
+        <li><a class="nav-link inline-block py-2" data-nav={l.id} href={l.href}>{l.label}</a></li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const nav = document.getElementById("mobile-nav");
+  const btn = document.getElementById("menu-toggle");
+  const setOpen = (open: boolean) => {
+    nav?.setAttribute("data-open", String(open));
+    btn?.setAttribute("aria-expanded", String(open));
+    btn?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  };
+  btn?.addEventListener("click", () => setOpen(nav?.getAttribute("data-open") !== "true"));
+  nav?.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+</script>

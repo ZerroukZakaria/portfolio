@@ -3,6 +3,7 @@
 @import "@fontsource/ibm-plex-sans/400.css";
 @import "@fontsource/ibm-plex-sans/600.css";
 @import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource-variable/archivo";
 
 /* Dark is the default theme */
 :root {
@@ -13,7 +14,12 @@
   --muted: #9aa0a9;
   --border: #2a2f39;
   --accent: #f2b134;
-  --accent-ink: #0f1115; /* text color on top of accent buttons */
+  --accent-ink: #0f1115; /* text color on top of accent surfaces */
+  --heading-2: #707680; /* second line of section headings */
+  /* The profile panel inverts the page */
+  --panel-bg: #f4f1ea;
+  --panel-text: #16181d;
+  --panel-muted: #555b66;
 }
 
 /* Follow the system if it prefers light, unless the user forced dark */
@@ -27,10 +33,14 @@
     --border: #dcd7cc;
     --accent: #9a5b00; /* darker amber so it stays readable on light */
     --accent-ink: #ffffff;
+    --heading-2: #80858e;
+    --panel-bg: #16181d;
+    --panel-text: #e8e6e1;
+    --panel-muted: #9aa0a9;
   }
 }
 
-/* The toggle will set this attribute to force light */
+/* The toggle sets this attribute to force light */
 :root[data-theme="light"] {
   color-scheme: light;
   --bg: #faf8f4;
@@ -40,6 +50,10 @@
   --border: #dcd7cc;
   --accent: #9a5b00;
   --accent-ink: #ffffff;
+  --heading-2: #80858e;
+  --panel-bg: #16181d;
+  --panel-text: #e8e6e1;
+  --panel-muted: #9aa0a9;
 }
 
 /* Expose the variables to Tailwind as utilities: bg-bg, text-muted, etc. */
@@ -51,14 +65,25 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-heading-2: var(--heading-2);
+  --color-panel-bg: var(--panel-bg);
+  --color-panel-text: var(--panel-text);
+  --color-panel-muted: var(--panel-muted);
   --font-sans: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "Archivo Variable", "Arial Narrow", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
 }
 
 /* Visible keyboard focus, required for accessibility */
@@ -66,17 +91,34 @@ body {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
+/* The accent is too faint on the inverted panel, so use its text color there */
+.panel :focus-visible {
+  outline-color: var(--panel-text);
+}
+
+/* Text nav: the current section is underlined, not just recolored */
+.nav-link {
+  color: var(--muted);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: transparent;
+  transition: color 0.15s;
+}
+.nav-link:hover {
+  color: var(--text);
+}
+.nav-link[aria-current="location"] {
+  color: var(--text);
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent);
+}
 
 /* Respect visitors who turn animations off */
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-/* Case study article */
+/* Case study article (restyled in a later step) */
 .case h2 { margin-top: 3rem; font-family: var(--font-mono); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
 .case h3 { margin-top: 1.5rem; font-weight: 600; }
 .case p, .case ul { margin-top: 1rem; line-height: 1.7; }
