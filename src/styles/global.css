@@ -8,18 +8,18 @@
 /* Dark is the default theme */
 :root {
   color-scheme: dark;
-  --bg: #0f1115;
-  --surface: #171a21;
-  --text: #e8e6e1;
-  --muted: #9aa0a9;
-  --border: #2a2f39;
-  --accent: #f2b134;
-  --accent-ink: #0f1115; /* text color on top of accent surfaces */
-  --heading-2: #707680; /* second line of section headings */
+  --bg: #131211;
+  --surface: #1c1a18;
+  --text: #f2efe9;
+  --muted: #a8a39b;
+  --border: #2e2b27;
+  --accent: #ff6b35;
+  --accent-ink: #131211; /* text color on top of accent surfaces */
+  --heading-2: #77726b; /* second line of section headings */
   /* The profile panel inverts the page */
-  --panel-bg: #f4f1ea;
-  --panel-text: #16181d;
-  --panel-muted: #555b66;
+  --panel-bg: #f2efe9;
+  --panel-text: #131211;
+  --panel-muted: #5a564f;
 }
 
 /* Follow the system if it prefers light, unless the user forced dark */
@@ -28,15 +28,15 @@
     color-scheme: light;
     --bg: #faf8f4;
     --surface: #ffffff;
-    --text: #16181d;
-    --muted: #555b66;
-    --border: #dcd7cc;
-    --accent: #9a5b00; /* darker amber so it stays readable on light */
+    --text: #1a1815;
+    --muted: #5a564f;
+    --border: #e2ddd3;
+    --accent: #c2410c;
     --accent-ink: #ffffff;
-    --heading-2: #80858e;
-    --panel-bg: #16181d;
-    --panel-text: #e8e6e1;
-    --panel-muted: #9aa0a9;
+    --heading-2: #7c7871;
+    --panel-bg: #131211;
+    --panel-text: #f2efe9;
+    --panel-muted: #a8a39b;
   }
 }
 
@@ -45,15 +45,15 @@
   color-scheme: light;
   --bg: #faf8f4;
   --surface: #ffffff;
-  --text: #16181d;
-  --muted: #555b66;
-  --border: #dcd7cc;
-  --accent: #9a5b00;
+  --text: #1a1815;
+  --muted: #5a564f;
+  --border: #e2ddd3;
+  --accent: #c2410c;
   --accent-ink: #ffffff;
-  --heading-2: #80858e;
-  --panel-bg: #16181d;
-  --panel-text: #e8e6e1;
-  --panel-muted: #9aa0a9;
+  --heading-2: #7c7871;
+  --panel-bg: #131211;
+  --panel-text: #f2efe9;
+  --panel-muted: #a8a39b;
 }
 
 /* Expose the variables to Tailwind as utilities: bg-bg, text-muted, etc. */
@@ -96,21 +96,24 @@ body {
   outline-color: var(--panel-text);
 }
 
-/* Text nav: the current section is underlined, not just recolored */
-.nav-link {
+/* Top icon nav */
+.nav-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
   color: var(--muted);
-  text-underline-offset: 6px;
-  text-decoration-thickness: 2px;
-  text-decoration-color: transparent;
-  transition: color 0.15s;
+  transition: color 0.15s, background-color 0.15s;
 }
-.nav-link:hover {
+.nav-icon:hover {
   color: var(--text);
+  background: var(--border);
 }
-.nav-link[aria-current="location"] {
-  color: var(--text);
-  text-decoration-line: underline;
-  text-decoration-color: var(--accent);
+/* The current section is a solid filled chip, not just a color change */
+.nav-icon[aria-current="location"] {
+  color: var(--bg);
+  background: var(--text);
 }
 
 /* Respect visitors who turn animations off */
