@@ -4,4 +4,6 @@ export const site = {
   github: "https://github.com/ZerroukZakaria",
   linkedin: "https://www.linkedin.com/in/zakaria-zerrouk-web/",
   cv: "/cv.pdf",
+  demo: "https://fleet-tracking-demo.zerrouk-zakaria.workers.dev",
+  demoRepo: "https://github.com/ZerroukZakaria/fleet-tracking-demo",
 };

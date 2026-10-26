@@ -1,0 +1,169 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../data/site";
+---
+<BaseLayout
+  title="Fleet tracking demo | Zakaria Zerrouk"
+  description="Case study: a simulated fleet and the logic that turns raw GPS positions into geofence alerts, trips, stops and reports."
+>
+  <article class="case mx-auto max-w-3xl px-6 pb-24 pt-12">
+    <p><a href="/#projects">← All projects</a></p>
+
+    <h1 class="mt-6 text-4xl font-semibold tracking-tight">Fleet tracking demo</h1>
+    <p class="text-lg text-muted">
+      A small simulated fleet, and the code that turns raw GPS positions into
+      geofence alerts, trips, stops and a per-vehicle report. It runs in the
+      browser, and as a real pipeline with MQTT and PostgreSQL.
+    </p>
+    <p class="font-mono text-sm">
+      <a href={site.demo} rel="noopener">Live demo</a> ·
+      <a href={site.demoRepo} rel="noopener">Source on GitHub</a>
+    </p>
+
+    <img
+      src="/images/fleet-demo.png"
+      alt="The demo: a map of Casablanca and Mohammedia with five truck and van icons, a list of geofence alerts on the left and a fleet report table underneath."
+      width="1581"
+      height="1207"
+      loading="lazy"
+      class="mt-6 h-auto w-full rounded-lg border border-border"
+    />
+
+    <h2>Why I built it</h2>
+    <p>
+      In my previous job I worked on fleet-tracking software, and that code
+      isn't mine to show. This project covers the same kind of problem with
+      original code and invented data: turning a stream of GPS points into
+      events someone can act on.
+    </p>
+
+    <h2>The problem</h2>
+    <p>
+      Nobody wants raw GPS points. A fleet operator wants to know when a
+      vehicle left the depot, where it stopped and for how long, and how far it
+      drove. Getting from positions to those answers means deciding what counts
+      as a stop, when a vehicle has really left a zone, and what to do with
+      messages that arrive late or twice.
+    </p>
+
+    <h2>What it does</h2>
+    <ul>
+      <li>Moves five vehicles along looping routes around Casablanca and Mohammedia, with simulated GPS noise.</li>
+      <li>Raises an alert when a vehicle enters or leaves a circular zone (the depot).</li>
+      <li>Detects stops and the trips between them.</li>
+      <li>Totals trips, distance, driving time and stopped time per vehicle.</li>
+    </ul>
+
+    <h2>My part</h2>
+    <p>
+      This is an independent project: original code, made-up data, nothing from
+      an employer. I built it with AI assistance, and I ran, checked and can
+      explain every part of it.
+    </p>
+
+    <h2>How it's built</h2>
+    <pre>Browser demo:     simulator → detectors → map, alerts, report
+
+Docker pipeline:  publisher → Mosquitto → ingest → PostgreSQL
+                  (simulator)  (MQTT broker)  (validate + detectors)</pre>
+    <p>
+      All the detection logic lives in one TypeScript package of plain
+      functions that know nothing about the browser, MQTT or the database. The
+      browser demo and the ingest service call the same code, and I test it on
+      its own. The map is MapLibre with OpenStreetMap tiles.
+    </p>
+
+    <h2>Decisions and trade-offs</h2>
+
+    <h3>Stops come from dwell time, not speed</h3>
+    <p>
+      Speed worked out from two GPS points is unreliable: a parked vehicle that
+      drifts 5 m in a second looks like it's doing 18 km/h. So a stop is a
+      vehicle that stays within 50 m of one spot for 3 minutes. The cost is
+      delay, since a stop can only be confirmed 3 minutes after it starts.
+    </p>
+
+    <h3>Trip times are reported honestly</h3>
+    <p>
+      Because of that delay, a trip is only known to have ended 3 minutes after
+      the vehicle arrived. I give it the time the vehicle actually arrived, not
+      the time the system noticed. This was the part that needed the most
+      thought, because it makes the results arrive late but correct, and the
+      report can lag the map by a few minutes.
+    </p>
+
+    <h3>Leaving a zone needs a buffer</h3>
+    <p>
+      GPS jitter around a zone boundary would otherwise produce a stream of
+      fake enter and exit events. A vehicle has to get 20 m beyond the edge
+      before it counts as having left. A test fails if that buffer is set to
+      zero, which is how I know it's doing the work.
+    </p>
+
+    <h3>Late, duplicate and restarted streams</h3>
+    <p>
+      A position at or before the vehicle's last timestamp is dropped. One that
+      is more than an hour earlier is treated as the stream restarting: the
+      open trip or stop is saved and the vehicle starts fresh. The ingest
+      service also rejects bad JSON, out-of-range values and messages where the
+      topic and the vehicle id disagree.
+    </p>
+
+    <h3>What I left out on purpose</h3>
+    <p>
+      I don't store raw positions. At the default speed that would be over
+      400,000 rows a day and nothing here needs them, but it means history
+      can't be replayed. There's no Kafka, because a fleet this size doesn't
+      need it, and no ORM, because four small tables are fine with plain SQL.
+    </p>
+
+    <h3>Two ways to run it</h3>
+    <p>
+      The hosted demo runs the simulation and detectors in the browser, so it's
+      free to host and has nothing to break. The Docker version uses a real
+      broker and database. The catch is that the hosted demo only simulates the
+      pipeline. It doesn't use MQTT or PostgreSQL.
+    </p>
+
+    <h2>Evidence it works</h2>
+    <ul>
+      <li>
+        Around 60 unit tests cover the logic. Some expected values are worked
+        out by hand, for example a simulated 3 km route and the exact trips,
+        stops and geofence events it must produce.
+      </li>
+      <li>
+        I ran the whole pipeline in Docker and checked what landed in
+        PostgreSQL. The first trips matched my own calculation of the
+        straight-line distance between the route points, for example 9,001 m
+        stored for a leg of about 9.0 km.
+      </li>
+      <li>
+        I restarted the broker while everything was running. The ingest service
+        reconnected, resubscribed and carried on saving.
+      </li>
+      <li>The <a href={site.demo} rel="noopener">live demo</a> is deployed and runs in your browser.</li>
+    </ul>
+
+    <h2>Limitations</h2>
+    <ul>
+      <li>It's a demo with synthetic data, not production software.</li>
+      <li>Vehicles drive straight lines at constant speed, so on the map they sometimes cut across buildings.</li>
+      <li>A trip can end up to about 50 m short of where the vehicle actually stopped.</li>
+      <li>Detector state is in memory, so restarting the ingest service loses any trip or stop in progress. A failed database write loses that message's results.</li>
+      <li>Delivery is at most once, there's one ingest instance, and there's no authentication.</li>
+      <li>The publisher and ingest services have no automated tests. I checked them by running the pipeline.</li>
+    </ul>
+    <p>
+      The <a href={site.demoRepo} rel="noopener">README</a> lists these in full.
+    </p>
+
+    <h2>What I'd do next</h2>
+    <ul>
+      <li>Route vehicles along real roads instead of straight lines.</li>
+      <li>Support polygon zones, not just circles.</li>
+      <li>Keep detector state in a store so a restart doesn't lose anything in progress.</li>
+      <li>Add automated tests for the publisher and ingest services, and authentication on the broker.</li>
+    </ul>
+  </article>
+</BaseLayout>
