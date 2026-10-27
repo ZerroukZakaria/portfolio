@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 import TopNav from "../components/TopNav.astro";
-import ProfilePanel from "../components/ProfilePanel.astro";
 
 interface Props {
   title: string;
@@ -34,7 +33,9 @@ const { title, description } = Astro.props;
     </a>
     <TopNav />
     <div class="mx-auto max-w-[1100px] px-6 pt-4 min-[900px]:grid min-[900px]:grid-cols-[280px_minmax(0,1fr)] min-[900px]:gap-16 min-[900px]:pb-12 min-[900px]:pt-6">
-      <ProfilePanel />
+    <main id="main" class="mx-auto max-w-[820px] px-6 pb-16">
+      <slot />
+    </main>
       <main id="main" class="min-w-0">
         <slot />
       </main>

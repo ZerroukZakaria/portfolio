@@ -1,20 +1,124 @@
 ---
 import Section from "./Section.astro";
+import * as simpleIcons from "simple-icons";
 
-const groups = [
-  { name: "Backend and APIs", items: ["PHP", "Laravel", "REST APIs", "Python"] },
-  { name: "Frontend", items: ["JavaScript", "TypeScript", "React", "Vue 3", "Tailwind CSS", "HTML", "CSS"] },
-  { name: "Data", items: ["SQL", "MySQL", "PostgreSQL", "NoSQL"] },
-  { name: "Real-time and messaging", items: ["MQTT", "Kafka"] },
-  { name: "Tooling", items: ["Git", "GitHub", "Docker", "Linux"] },
+interface Item {
+  name: string;
+  slugs?: string[]; // Simple Icons slugs to try, in order
+}
+
+const groups: { name: string; items: Item[] }[] = [
+  {
+    name: "Backend",
+    items: [
+      { name: "PHP", slugs: ["php"] },
+      { name: "Laravel", slugs: ["laravel"] },
+      { name: "REST APIs" },
+      { name: "Python", slugs: ["python"] },
+    ],
+  },
+  {
+    name: "Frontend",
+    items: [
+      { name: "JavaScript", slugs: ["javascript"] },
+      { name: "TypeScript", slugs: ["typescript"] },
+      { name: "React", slugs: ["react"] },
+      { name: "Vue 3", slugs: ["vuedotjs"] },
+      { name: "Tailwind CSS", slugs: ["tailwindcss"] },
+      { name: "HTML", slugs: ["html5"] },
+      { name: "CSS", slugs: ["css", "css3"] },
+    ],
+  },
+  {
+    name: "Data",
+    items: [
+      { name: "SQL" },
+      { name: "MySQL", slugs: ["mysql"] },
+      { name: "PostgreSQL", slugs: ["postgresql"] },
+      { name: "NoSQL" },
+    ],
+  },
+  {
+    name: "Real-time",
+    items: [
+      { name: "MQTT", slugs: ["mqtt"] },
+      { name: "Kafka", slugs: ["apachekafka"] },
+    ],
+  },
+  {
+    name: "Tooling",
+    items: [
+      { name: "Git", slugs: ["git"] },
+      { name: "GitHub", slugs: ["github"] },
+      { name: "Docker", slugs: ["docker"] },
+      { name: "Linux", slugs: ["linux"] },
+    ],
+  },
 ];
+
+interface Icon {
+  slug: string;
+  path: string;
+  hex: string;
+}
+
+const allIcons = (Object.values(simpleIcons) as unknown[]).filter(
+  (v): v is Icon =>
+    typeof v === "object" && v !== null && "slug" in v && "path" in v && "hex" in v,
+);
+
+const findIcon = (slugs?: string[]): Icon | null => {
+  for (const s of slugs ?? []) {
+    const icon = allIcons.find((i) => i.slug === s);
+    if (icon) return icon;
+  }
+  return null;
+};
+
+// Relative luminance, used to decide whether a brand color is readable
+const luminance = (hex: string): number => {
+  const [r, g, b] = [0, 2, 4]
+    .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+// Keep roughly 3:1 against the dark and light backgrounds, else use the text color
+const colorOnDark = (hex: string) => (luminance(hex) < 0.11 ? "var(--text)" : `#${hex}`);
+const colorOnLight = (hex: string) => (luminance(hex) > 0.28 ? "var(--text)" : `#${hex}`);
 ---
 <Section id="skills" title="Skills">
-  <dl class="grid gap-8 sm:grid-cols-2">
+  <dl class="border-t border-border">
     {groups.map((g) => (
-      <div>
-        <dt class="font-semibold">{g.name}</dt>
-        <dd class="mt-2 text-muted">{g.items.join(" · ")}</dd>
+      <div class="grid gap-3 border-b border-border py-5 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
+        <dt class="pt-0.5 font-mono text-xs uppercase tracking-widest text-muted">{g.name}</dt>
+        <dd>
+          <ul class="flex flex-wrap gap-x-5 gap-y-3">
+            {g.items.map((item) => {
+              const icon = findIcon(item.slugs);
+              return (
+                <li class="flex items-center gap-2 text-[15px] font-semibold">
+                  {icon ? (
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="16"
+                      height="16"
+                      aria-hidden="true"
+                      class="tech-icon shrink-0"
+                      style={`--ic-dark:${colorOnDark(icon.hex)};--ic-light:${colorOnLight(icon.hex)}`}
+                    >
+                      <path d={icon.path} fill="currentColor" />
+                    </svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" class="shrink-0 text-muted">
+                      <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                  )}
+                  {item.name}
+                </li>
+              );
+            })}
+          </ul>
+        </dd>
       </div>
     ))}
   </dl>
