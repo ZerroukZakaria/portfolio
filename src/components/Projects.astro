@@ -4,24 +4,41 @@ import { site } from "../data/site";
 
 const tags = ["TypeScript", "React", "MapLibre", "MQTT", "PostgreSQL", "Docker"];
 ---
-<Section id="projects" title="Selected projects">
-  <article class="rounded-lg border border-border bg-surface p-6">
-    <p class="font-mono text-xs text-muted">Independent project</p>
-    <h3 class="mt-2 text-xl font-semibold">
-      <a href="/projects/fleet-tracking-demo" class="hover:text-accent">Fleet tracking demo</a>
+<Section id="projects" line1="Selected" line2="Projects">
+  <article class="on-accent relative overflow-hidden rounded-2xl bg-accent p-6 text-accent-ink md:p-8">
+    <p class="font-mono text-xs uppercase tracking-widest opacity-80">Independent project</p>
+
+    <h3 class="mt-3 font-display text-3xl font-extrabold uppercase leading-none tracking-tight md:text-4xl">
+      <a href="/projects/fleet-tracking-demo" class="after:absolute after:inset-0 after:content-['']">
+        Fleet tracking demo
+      </a>
     </h3>
-    <p class="mt-3 max-w-2xl text-muted">
+
+    <p class="mt-4 max-w-xl opacity-90">
       A simulated fleet and the logic that turns raw GPS positions into geofence
       alerts, trips, stops and reports. It runs in the browser, and as a Docker
       pipeline with MQTT and PostgreSQL. Original code, synthetic data.
     </p>
-    <ul class="mt-4 flex flex-wrap gap-2 font-mono text-xs text-muted">
-      {tags.map((t) => <li class="rounded border border-border px-2 py-1">{t}</li>)}
+
+    <ul class="mt-5 flex flex-wrap gap-2 font-mono text-xs">
+      {tags.map((t) => (
+        <li class="rounded border border-accent-ink/40 px-2 py-1">{t}</li>
+      ))}
     </ul>
+
     <div class="mt-6 flex flex-wrap gap-3 text-sm">
-      <a href="/projects/fleet-tracking-demo" class="rounded bg-accent px-4 py-2 font-semibold text-accent-ink hover:opacity-90">Case study</a>
-      <a href={site.demo} rel="noopener" class="rounded border border-border px-4 py-2 font-semibold hover:border-accent">Live demo</a>
-      <a href={site.demoRepo} rel="noopener" class="rounded border border-border px-4 py-2 font-semibold hover:border-accent">GitHub</a>
+      <a href="/projects/fleet-tracking-demo" class="relative z-10 rounded bg-accent-ink px-4 py-2 font-semibold text-accent hover:opacity-90">Case study</a>
+      <a href={site.demo} rel="noopener" class="relative z-10 rounded border border-accent-ink/50 px-4 py-2 font-semibold hover:border-accent-ink">Live demo</a>
+      <a href={site.demoRepo} rel="noopener" class="relative z-10 rounded border border-accent-ink/50 px-4 py-2 font-semibold hover:border-accent-ink">GitHub</a>
     </div>
+
+    <img
+      src="/images/fleet-demo.png"
+      alt=""
+      width="1581"
+      height="1207"
+      loading="lazy"
+      class="mt-8 h-auto w-full rounded-lg border border-accent-ink/20"
+    />
   </article>
 </Section>

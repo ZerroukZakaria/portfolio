@@ -2,31 +2,49 @@
 import Section from "./Section.astro";
 
 const education = [
-  { title: "Professional Licence in Web and Mobile Development", school: "ENSET Mohammedia", period: "2025–2026" },
-  { title: "Specialized Technician Diploma in Digital Development, Web Full Stack", school: "ISTA Mohammedia", period: "2021–2023" },
-  { title: "Baccalaureate in Physical and Chemical Sciences", school: "Lycée Ibn Yassine, Mohammedia", period: "2020" },
+  {
+    title: "Professional Licence in Web and Mobile Development",
+    note: "Mention Bien",
+    school: "ENSET Mohammedia",
+    period: "2025–2026",
+  },
+  {
+    title: "Specialized Technician Diploma in Digital Development, Web Full Stack",
+    note: "",
+    school: "ISTA Mohammedia",
+    period: "2021–2023",
+  },
+  {
+    title: "Baccalaureate in Physical and Chemical Sciences",
+    note: "",
+    school: "Lycée Ibn Yassine, Mohammedia",
+    period: "2020",
+  },
 ];
 ---
-<Section id="about" title="About">
-  <div class="grid gap-12 md:grid-cols-2">
-    <p class="text-lg leading-relaxed">
-      I'm a full-stack developer from Mohammedia with experience in backend
-      development, API design and real-time data systems. I enjoy turning messy
-      data flows, like GPS positions, device messages and event streams, into
-      reliable features and clear reports. I work comfortably across Laravel,
-      React and Vue, and I'm looking for a team where I can keep building
-      production-quality applications.
-    </p>
-    <div>
-      <h3 class="font-semibold">Education</h3>
-      <ul class="mt-4 space-y-4">
-        {education.map((e) => (
-          <li>
-            <p>{e.title}</p>
-            <p class="text-sm text-muted">{e.school} · {e.period}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
+<Section id="about" line1="About" line2="Me">
+  <p class="max-w-2xl text-xl leading-relaxed">
+    I'm a full-stack developer from Mohammedia with experience in backend
+    development, API design and real-time data systems. I enjoy turning messy
+    data flows, like GPS positions, device messages and event streams, into
+    reliable features and clear reports. I work comfortably across Laravel,
+    React and Vue, and I'm looking for a team where I can keep building
+    production-quality applications.
+  </p>
+
+  <h3 class="mt-12 font-mono text-xs uppercase tracking-widest text-muted">Education</h3>
+  <dl class="mt-4 border-t border-border">
+    {education.map((e) => (
+      <div class="grid gap-1 border-b border-border py-4 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
+        <dt class="pt-0.5 font-mono text-xs text-muted">{e.period}</dt>
+        <dd>
+          <p class="font-semibold">
+            {e.title}
+            {e.note && <span class="text-accent-text"> · {e.note}</span>}
+          </p>
+          <p class="text-sm text-muted">{e.school}</p>
+        </dd>
+      </div>
+    ))}
+  </dl>
 </Section>

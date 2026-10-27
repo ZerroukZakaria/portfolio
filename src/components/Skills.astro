@@ -86,8 +86,8 @@ const luminance = (hex: string): number => {
 const colorOnDark = (hex: string) => (luminance(hex) < 0.11 ? "var(--text)" : `#${hex}`);
 const colorOnLight = (hex: string) => (luminance(hex) > 0.28 ? "var(--text)" : `#${hex}`);
 ---
-<Section id="skills" title="Skills">
-  <dl class="border-t border-border">
+<Section id="skills" line1="Tech" line2="Stack">
+    <dl class="border-t border-border">
     {groups.map((g) => (
       <div class="grid gap-3 border-b border-border py-5 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
         <dt class="pt-0.5 font-mono text-xs uppercase tracking-widest text-muted">{g.name}</dt>

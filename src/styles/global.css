@@ -88,6 +88,11 @@ body {
   outline-offset: 3px;
 }
 
+/* Focus ring on purple surfaces: the accent would blend in, so use white */
+.on-accent :focus-visible {
+  outline-color: var(--accent-ink);
+}
+
 /* Top icon nav */
 .nav-icon {
   display: grid;

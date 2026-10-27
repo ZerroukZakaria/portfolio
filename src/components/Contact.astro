@@ -2,19 +2,25 @@
 import Section from "./Section.astro";
 import { site } from "../data/site";
 ---
-<Section id="contact" title="Contact">
-  <p class="max-w-xl text-lg">
+<Section id="contact" line1="Get in" line2="Touch">
+  <p class="max-w-xl text-lg text-muted">
     I'm open to full-stack and backend roles in Mohammedia, Casablanca, Rabat
     or remote. The quickest way to reach me is by email.
   </p>
-  <div class="mt-6 flex flex-wrap gap-3">
-    <a href={`mailto:${site.email}`} class="rounded bg-accent px-5 py-2.5 font-semibold text-accent-ink hover:opacity-90">
-      {site.email}
-    </a>
-    <a href={site.linkedin} rel="noopener" class="rounded border border-border px-5 py-2.5 font-semibold hover:border-accent">LinkedIn</a>
-    <a href={site.github} rel="noopener" class="rounded border border-border px-5 py-2.5 font-semibold hover:border-accent">GitHub</a>
-  </div>
+
+  <a
+    href={`mailto:${site.email}`}
+    class="mt-6 block break-words font-display text-2xl font-extrabold tracking-tight underline decoration-accent-text decoration-4 underline-offset-8 sm:text-4xl"
+  >
+    {site.email}
+  </a>
+
+  <ul class="mt-8 flex flex-wrap gap-3">
+    <li><a href={site.linkedin} rel="noopener" class="rounded border border-border px-5 py-2.5 font-semibold hover:border-accent-text">LinkedIn</a></li>
+    <li><a href={site.github} rel="noopener" class="rounded border border-border px-5 py-2.5 font-semibold hover:border-accent-text">GitHub</a></li>
+  </ul>
 </Section>
-<footer class="mx-auto max-w-5xl border-t border-border px-6 py-8 font-mono text-xs text-muted">
+
+<footer class="border-t border-border py-8 font-mono text-xs text-muted">
   © 2026 {site.name}
 </footer>
