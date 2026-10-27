@@ -27,18 +27,13 @@ const { title, description } = Astro.props;
   <body>
     <a
       href="#main"
-      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-ink"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-60 focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-ink"
     >
       Skip to content
     </a>
     <TopNav />
-    <div class="mx-auto max-w-[1100px] px-6 pt-4 min-[900px]:grid min-[900px]:grid-cols-[280px_minmax(0,1fr)] min-[900px]:gap-16 min-[900px]:pb-12 min-[900px]:pt-6">
-    <main id="main" class="mx-auto max-w-[820px] px-6 pb-16">
+    <main id="main" class="mx-auto max-w-205 px-6 pb-16">
       <slot />
     </main>
-      <main id="main" class="min-w-0">
-        <slot />
-      </main>
-    </div>
   </body>
 </html>

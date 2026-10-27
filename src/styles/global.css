@@ -9,18 +9,15 @@
 :root {
   color-scheme: dark;
   --bg: #0c0b0a;
-  --dot: rgba(242, 239, 233, 0.09);  
+  --dot: rgba(242, 239, 233, 0.09);
   --surface: #1c1a18;
   --text: #f2efe9;
   --muted: #a8a39b;
   --border: #2e2b27;
-  --accent: #ff6b35;
-  --accent-ink: #131211; /* text color on top of accent surfaces */
+  --accent: #4e2ca3; /* filled surfaces, such as buttons */
+  --accent-ink: #ffffff; /* text on top of --accent */
+  --accent-text: #a58bff; /* purple text, bullets and focus rings; lighter so it is readable on dark */
   --heading-2: #77726b; /* second line of section headings */
-  /* The profile panel inverts the page */
-  --panel-bg: #f2efe9;
-  --panel-text: #131211;
-  --panel-muted: #5a564f;
 }
 
 /* Follow the system if it prefers light, unless the user forced dark */
@@ -33,12 +30,10 @@
     --text: #1a1815;
     --muted: #5a564f;
     --border: #e2ddd3;
-    --accent: #c2410c;
+    --accent: #4e2ca3;
     --accent-ink: #ffffff;
+    --accent-text: #4e2ca3;
     --heading-2: #7c7871;
-    --panel-bg: #131211;
-    --panel-text: #f2efe9;
-    --panel-muted: #a8a39b;
   }
 }
 
@@ -51,12 +46,10 @@
   --text: #1a1815;
   --muted: #5a564f;
   --border: #e2ddd3;
-  --accent: #c2410c;
+  --accent: #4e2ca3;
   --accent-ink: #ffffff;
+  --accent-text: #4e2ca3;
   --heading-2: #7c7871;
-  --panel-bg: #131211;
-  --panel-text: #f2efe9;
-  --panel-muted: #a8a39b;
 }
 
 /* Expose the variables to Tailwind as utilities: bg-bg, text-muted, etc. */
@@ -68,10 +61,8 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
   --color-heading-2: var(--heading-2);
-  --color-panel-bg: var(--panel-bg);
-  --color-panel-text: var(--panel-text);
-  --color-panel-muted: var(--panel-muted);
   --font-sans: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --font-display: "Archivo Variable", "Arial Narrow", system-ui, sans-serif;
@@ -93,12 +84,8 @@ body {
 
 /* Visible keyboard focus, required for accessibility */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent-text);
   outline-offset: 3px;
-}
-/* The accent is too faint on the inverted panel, so use its text color there */
-.panel :focus-visible {
-  outline-color: var(--panel-text);
 }
 
 /* Top icon nav */
@@ -127,15 +114,14 @@ body {
 }
 
 /* Case study article (restyled in a later step) */
-.case h2 { margin-top: 3rem; font-family: var(--font-mono); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+.case h2 { margin-top: 3rem; font-family: var(--font-mono); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-text); }
 .case h3 { margin-top: 1.5rem; font-weight: 600; }
 .case p, .case ul { margin-top: 1rem; line-height: 1.7; }
 .case ul { list-style: disc; padding-left: 1.25rem; }
 .case li + li { margin-top: 0.5rem; }
-.case a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.case a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
 .case code { font-family: var(--font-mono); font-size: 0.9em; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0 0.3em; }
 .case pre { margin-top: 1rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.6; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
-
 
 /* Skill icons: brand color where readable, otherwise the text color */
 .tech-icon { color: var(--ic-dark); }
