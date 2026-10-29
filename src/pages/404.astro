@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Page not found | Zakaria Zerrouk"
+  description="This page does not exist."
+>
+  <section class="py-24">
+    <p class="font-mono text-sm text-muted">404</p>
+    <h1 class="mt-4 font-display text-5xl font-extrabold uppercase leading-[0.95] tracking-tight md:text-7xl">
+      Page not found
+    </h1>
+    <p class="mt-6 max-w-xl text-lg text-muted">
+      That page doesn't exist. You can head back to the home page or read the
+      project case study.
+    </p>
+    <p class="mt-8 flex flex-wrap gap-3">
+      <a href="/" class="rounded bg-accent px-5 py-2.5 font-semibold text-accent-ink hover:opacity-90">Home</a>
+      <a href="/projects/fleet-tracking-demo" class="rounded border border-border px-5 py-2.5 font-semibold hover:border-accent-text">Case study</a>
+    </p>
+  </section>
+</BaseLayout>

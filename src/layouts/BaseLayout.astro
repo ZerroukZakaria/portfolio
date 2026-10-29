@@ -1,13 +1,18 @@
 ---
 import "../styles/global.css";
 import TopNav from "../components/TopNav.astro";
+import { site } from "../data/site";
 
 interface Props {
   title: string;
   description: string;
+  image?: string;
 }
-const { title, description } = Astro.props;
+const { title, description, image = "/og.png" } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -16,6 +21,21 @@ const { title, description } = Astro.props;
      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <meta name="theme-color" content="#0c0b0a" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Zakaria Zerrouk" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImage.href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Zakaria Zerrouk, full-stack developer building real-time, data-driven web applications."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
     <script is:inline>
       // Apply the saved theme before first paint to avoid a flash
       try {
@@ -35,5 +55,8 @@ const { title, description } = Astro.props;
     <main id="main" class="mx-auto max-w-205 px-6 pb-16">
       <slot />
     </main>
+    <footer class="mx-auto max-w-820px border-t border-border px-6 py-8 font-mono text-xs text-muted">
+      © 2026 {site.name}
+    </footer>
   </body>
 </html>
