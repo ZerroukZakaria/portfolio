@@ -11,9 +11,11 @@ import { site } from "../../data/site";
 
     <h1 class="mt-6 font-display text-5xl font-extrabold uppercase leading-[0.95] tracking-tight md:text-6xl">Fleet tracking demo</h1>
     <p class="text-lg text-muted">
-      A small simulated fleet, and the code that turns raw GPS positions into
-      geofence alerts, trips, stops and a per-vehicle report. It runs in the
-      browser, and as a real pipeline with MQTT and PostgreSQL.
+      A simulated fleet, and the logic that turns raw GPS positions into
+      geofence alerts, trips, stops and per-vehicle reports. It runs in the
+      browser and as a Docker pipeline with MQTT and PostgreSQL. It is an
+      independent project: original code and synthetic data, with no employer
+      material.
     </p>
     <p class="font-mono text-sm">
       <a href={site.demo} rel="noopener">Live demo</a> ·
@@ -29,140 +31,127 @@ import { site } from "../../data/site";
       class="mt-6 h-auto w-full rounded-lg border border-border"
     />
 
-    <h2>Why I built it</h2>
-    <p>
-      In my previous job I worked on fleet-tracking software, and that code
-      isn't mine to show. This project covers the same kind of problem with
-      original code and invented data: turning a stream of GPS points into
-      events someone can act on.
-    </p>
-
     <h2>The problem</h2>
     <p>
-      Nobody wants raw GPS points. A fleet operator wants to know when a
+      A fleet operator does not need raw GPS points. They need to know when a
       vehicle left the depot, where it stopped and for how long, and how far it
       drove. Getting from positions to those answers means deciding what counts
-      as a stop, when a vehicle has really left a zone, and what to do with
+      as a stop, when a vehicle has genuinely left a zone, and how to handle
       messages that arrive late or twice.
     </p>
 
     <h2>What it does</h2>
     <ul>
-      <li>Moves five vehicles along looping routes around Casablanca and Mohammedia, with simulated GPS noise.</li>
+      <li>Simulates five vehicles on looping routes around Casablanca and Mohammedia, with GPS noise.</li>
       <li>Raises an alert when a vehicle enters or leaves a circular zone (the depot).</li>
       <li>Detects stops and the trips between them.</li>
-      <li>Totals trips, distance, driving time and stopped time per vehicle.</li>
+      <li>Totals trips, distance, driving time and stopped time for each vehicle.</li>
+      <li>Shows the selected vehicle's trips, stops and geofence events as a timeline.</li>
     </ul>
 
-    <h2>My part</h2>
-    <p>
-      This is an independent project: original code, made-up data, nothing from
-      an employer. I built it with AI assistance, and I ran, checked and can
-      explain every part of it.
-    </p>
-
-    <h2>How it's built</h2>
+    <h2>Architecture</h2>
     <pre>Browser demo:     simulator → detectors → map, alerts, report
 
 Docker pipeline:  publisher → Mosquitto → ingest → PostgreSQL
-                  (simulator)  (MQTT broker)  (validate + detectors)</pre>
+                  (simulator)  (MQTT broker)  (validation + detectors)</pre>
     <p>
-      All the detection logic lives in one TypeScript package of plain
-      functions that know nothing about the browser, MQTT or the database. The
-      browser demo and the ingest service call the same code, and I test it on
-      its own. The map is MapLibre with OpenStreetMap tiles.
+      All detection logic lives in a single TypeScript package of plain
+      functions with no dependency on the browser, MQTT or the database. The
+      browser demo and the ingest service call the same code, which is tested
+      in isolation. The map uses MapLibre with OpenStreetMap tiles.
     </p>
 
     <h2>Decisions and trade-offs</h2>
 
-    <h3>Stops come from dwell time, not speed</h3>
+    <h3>Stops are detected by dwell time, not speed</h3>
     <p>
-      Speed worked out from two GPS points is unreliable: a parked vehicle that
-      drifts 5 m in a second looks like it's doing 18 km/h. So a stop is a
-      vehicle that stays within 50 m of one spot for 3 minutes. The cost is
-      delay, since a stop can only be confirmed 3 minutes after it starts.
+      Speed derived from two GPS points is unreliable: a parked vehicle that
+      drifts 5 m in a second appears to travel at 18 km/h. A stop is therefore
+      defined as a vehicle staying within 50 m of one spot for three minutes.
+      The trade-off is latency, since a stop can only be confirmed three
+      minutes after it begins.
     </p>
 
-    <h3>Trip times are reported honestly</h3>
+    <h3>Trip times are retroactive</h3>
     <p>
-      Because of that delay, a trip is only known to have ended 3 minutes after
-      the vehicle arrived. I give it the time the vehicle actually arrived, not
-      the time the system noticed. This was the part that needed the most
-      thought, because it makes the results arrive late but correct, and the
-      report can lag the map by a few minutes.
+      Because confirmation is delayed, a trip's end is recorded as the moment
+      the vehicle arrived, not the moment the system noticed. Results arrive
+      late but accurate, which means the report can lag the map by a few
+      minutes.
     </p>
 
-    <h3>Leaving a zone needs a buffer</h3>
+    <h3>Geofence exits use a buffer</h3>
     <p>
-      GPS jitter around a zone boundary would otherwise produce a stream of
-      fake enter and exit events. A vehicle has to get 20 m beyond the edge
-      before it counts as having left. A test fails if that buffer is set to
-      zero, which is how I know it's doing the work.
+      GPS jitter at a zone boundary would otherwise produce a stream of false
+      enter and exit events. A vehicle must travel 20 m beyond the edge before
+      it counts as having left. The jitter test fails when the buffer is set to
+      zero, which confirms that the buffer is what prevents the false events.
     </p>
 
     <h3>Late, duplicate and restarted streams</h3>
     <p>
-      A position at or before the vehicle's last timestamp is dropped. One that
-      is more than an hour earlier is treated as the stream restarting: the
-      open trip or stop is saved and the vehicle starts fresh. The ingest
-      service also rejects bad JSON, out-of-range values and messages where the
-      topic and the vehicle id disagree.
+      A position at or before the vehicle's last timestamp is dropped. A
+      position more than an hour earlier is treated as a stream restart: the
+      open trip or stop is saved and the vehicle's state is reset. The ingest
+      service also rejects malformed JSON, out-of-range values and messages
+      whose topic and vehicle id disagree.
     </p>
 
-    <h3>What I left out on purpose</h3>
+    <h3>Deliberate omissions</h3>
     <p>
-      I don't store raw positions. At the default speed that would be over
-      400,000 rows a day and nothing here needs them, but it means history
-      can't be replayed. There's no Kafka, because a fleet this size doesn't
-      need it, and no ORM, because four small tables are fine with plain SQL.
+      Raw positions are not stored. At the default speed that would exceed
+      400,000 rows per day, and nothing in the project needs them, although it
+      means history cannot be replayed. Kafka is not used, because a fleet of
+      this size does not need it, and there is no ORM, because four small
+      tables are well served by plain SQL.
     </p>
 
     <h3>Two ways to run it</h3>
     <p>
-      The hosted demo runs the simulation and detectors in the browser, so it's
-      free to host and has nothing to break. The Docker version uses a real
-      broker and database. The catch is that the hosted demo only simulates the
-      pipeline. It doesn't use MQTT or PostgreSQL.
+      The hosted demo runs the simulation and detectors in the browser, so it
+      is free to host and has no infrastructure to maintain. The Docker version
+      uses a real broker and database. The hosted demo therefore simulates the
+      pipeline and does not use MQTT or PostgreSQL itself.
     </p>
 
     <h2>Evidence it works</h2>
     <ul>
       <li>
-        Around 60 unit tests cover the logic. Some expected values are worked
-        out by hand, for example a simulated 3 km route and the exact trips,
-        stops and geofence events it must produce.
+        Over 50 unit tests cover the detection logic. Some expected values are
+        derived by hand, for example a simulated 3 km route and the exact
+        trips, stops and geofence events it must produce.
       </li>
       <li>
-        I ran the whole pipeline in Docker and checked what landed in
-        PostgreSQL. The first trips matched my own calculation of the
-        straight-line distance between the route points, for example 9,001 m
-        stored for a leg of about 9.0 km.
+        The full pipeline was run in Docker and the stored PostgreSQL rows were
+        checked against expected values. For example, one trip was stored as
+        9,001 m, against a straight-line distance of about 9.0 km between its
+        two points.
       </li>
       <li>
-        I restarted the broker while everything was running. The ingest service
-        reconnected, resubscribed and carried on saving.
+        The broker was restarted mid-run. The ingest service reconnected,
+        resubscribed and continued saving.
       </li>
-      <li>The <a href={site.demo} rel="noopener">live demo</a> is deployed and runs in your browser.</li>
+      <li>The <a href={site.demo} rel="noopener">live demo</a> is deployed and runs in the browser.</li>
     </ul>
 
     <h2>Limitations</h2>
     <ul>
-      <li>It's a demo with synthetic data, not production software.</li>
+      <li>It is a demo with synthetic data, not production software.</li>
       <li>Vehicles drive straight lines at constant speed, so on the map they sometimes cut across buildings.</li>
-      <li>A trip can end up to about 50 m short of where the vehicle actually stopped.</li>
-      <li>Detector state is in memory, so restarting the ingest service loses any trip or stop in progress. A failed database write loses that message's results.</li>
-      <li>Delivery is at most once, there's one ingest instance, and there's no authentication.</li>
-      <li>The publisher and ingest services have no automated tests. I checked them by running the pipeline.</li>
+      <li>A trip can end up to about 50 m short of the point where the vehicle actually stopped.</li>
+      <li>Detector state is held in memory, so restarting the ingest service loses any trip or stop in progress. A failed database write loses the results of that message.</li>
+      <li>Delivery is at most once, there is a single ingest instance, and there is no authentication.</li>
+      <li>The publisher and ingest services have no automated tests. They were checked by running the full pipeline.</li>
     </ul>
     <p>
       The <a href={site.demoRepo} rel="noopener">README</a> lists these in full.
     </p>
 
-    <h2>What I'd do next</h2>
+    <h2>Next steps</h2>
     <ul>
       <li>Route vehicles along real roads instead of straight lines.</li>
-      <li>Support polygon zones, not just circles.</li>
-      <li>Keep detector state in a store so a restart doesn't lose anything in progress.</li>
+      <li>Support polygon zones as well as circles.</li>
+      <li>Persist detector state so a restart does not lose work in progress.</li>
       <li>Add automated tests for the publisher and ingest services, and authentication on the broker.</li>
     </ul>
   </article>
